@@ -67,7 +67,7 @@ public class World {
 	public void drawBoard() {
 		
 		for(int i=0;i<gridSize;i++) {
-			
+			System.out.print("       ");
 			for(int j=0;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien)
 					System.out.print(entities.get(i).get(j));
