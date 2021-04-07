@@ -6,7 +6,4 @@ public class Gold extends Entity{
 		this.symbol = "G";
 	}
 	
-	public String toString() {
-		return this.symbol;
-	}
 }

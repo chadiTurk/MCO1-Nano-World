@@ -8,6 +8,7 @@ public class World {
 	private Alien alien;
 	private Nano nano;
 	private Gold gold;
+	private Pit pit;
 	private int gridSize; // has to be from 8 to 64
 
 	
@@ -17,6 +18,7 @@ public class World {
 		this.alien = new Alien();
 		this.nano = new Nano();
 		this.gold = new Gold();
+		this.pit = new Pit();
 	}
 	
 	public void initializeWorld() {
@@ -37,6 +39,7 @@ public class World {
 		alien.generateInitialPos(gridSize);
 		nano.generateInitialPos(gridSize);
 		gold.generateInitialPos(gridSize);
+		pit.generateInitialPos(gridSize);
 		
 		for(int i=0;i<gridSize;i++) {
 			for(int j=0;j<gridSize;j++) {
@@ -52,7 +55,11 @@ public class World {
 				}
 				else if((i == gold.getXPos() && j == gold.getYPos()) && gold.isInBoard() == false){
 					entities.get(i).set(j,gold);
-					gold.setInBoard(false);
+					gold.setInBoard(true);
+				}
+				else if((i == pit.getXPos() && j == gold.getYPos()) && pit.isInBoard() == false) {
+					entities.get(i).set(i,pit);
+					pit.setInBoard(true);
 				}
 				
 			}
