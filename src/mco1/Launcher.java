@@ -20,6 +20,9 @@ public class Launcher {
 		World world = new World(gridSize);
 		world.initializeWorld();
 		world.drawBoard();
+		
+		
+		
 		scanner.close(); // put at end of the function
 	}
 }

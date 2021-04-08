@@ -10,6 +10,8 @@ public class Alien extends Entity {
 	public Alien(){
 		this.symbol = "A";
 		this.random = new Random();
+		this.xPos = 0;
+		this.yPos = 0;
 		this.randomFront = new ArrayList<>();
 	}
 	
@@ -18,44 +20,61 @@ public class Alien extends Entity {
 		return this.symbol + this.front;
 	}
 	
-	public void initialFront(int gridSize) {
+	public void move(int gridSize) {
+		
+		if(this.front == "v") {
+			moveDown();
+		}
+		else if(this.front == "^" && xPos != 0) {
+			moveUp();
+		}
+		else if(this.front == "<" && yPos !=0) {
+			moveLeft();
+		}
+		
+		else if(this.front == ">" && yPos != gridSize - 1) {
+			moveRight();
+		}
+	}
+	
+	public void generateFront(int gridSize) {
 		
 		if(xPos == 0 && yPos == 0) {
 			int position = ThreadLocalRandom.current().nextInt(2,4);
-			generateFront(position);
+			updateFront(position);
 			
 		
 		}
 		
 		else if(xPos == gridSize - 1 && yPos == 0) {
 			int position = ThreadLocalRandom.current().nextInt(1,3);
-			generateFront(position);
+			updateFront(position);
 			
 		
 		}
 		else if(xPos == 0 && yPos == gridSize -1) {
 			int position = ThreadLocalRandom.current().nextInt(3,5);
-			generateFront(position);
+			updateFront(position);
 			
 		
 		}
 		
 		else if(xPos == gridSize - 1 && yPos == gridSize - 1) {
 			int position = random.nextBoolean() ? 1:4;
-			generateFront(position);
+			updateFront(position);
 			
 		
 		}
 		
 		else if(xPos == 0 && (yPos >0 || yPos <gridSize -1 )) {
 			int position = ThreadLocalRandom.current().nextInt(2,5);
-			generateFront(position);
+			updateFront(position);
 
 		}
 		
 		else if(yPos == 0 && (xPos>0 || xPos < gridSize -1)) {
 			int position = ThreadLocalRandom.current().nextInt(1,4);
-			generateFront(position);
+			updateFront(position);
 			
 		
 		}
@@ -66,7 +85,7 @@ public class Alien extends Entity {
 			randomFront.add(4);
 			Collections.shuffle(randomFront);
 			
-			generateFront(randomFront.get(0));
+			updateFront(randomFront.get(0));
 			
 			randomFront.clear();
 			
@@ -79,21 +98,21 @@ public class Alien extends Entity {
 			randomFront.add(4);
 			Collections.shuffle(randomFront);
 			
-			generateFront(randomFront.get(0));
+			updateFront(randomFront.get(0));
 			randomFront.clear();
 			
 		
 		}
 		else {
 			int position = ThreadLocalRandom.current().nextInt(1,5);
-			generateFront(position);
+			updateFront(position);
 			
 			
 		}
 		
 	}
 	
-	public void generateFront(int position) {
+	public void updateFront(int position) {
 		
 		System.out.println("The value of position is :" + position);
 		switch(position) {
@@ -112,9 +131,28 @@ public class Alien extends Entity {
 		}
 	}
 	
+	
+	public void moveLeft() {
+		this.yPos -=1;
+	}
+	
+	public void moveRight() {
+		this.yPos += 1;
+	}
+	
+	public void moveUp() {
+		this.xPos -=1;
+	}
+	
+	public void moveDown() {
+		this.xPos +=1;
+	}
+	
 	public void rotate() { //change direction of symbol but make sure that it points to a valid location e.g. edge of board
 		
 	}
+	
+	
 	
 	public void scan() {
 		
