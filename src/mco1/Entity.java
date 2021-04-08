@@ -5,7 +5,6 @@ public abstract class Entity {
 	
 	protected int xPos;
 	protected int yPos;
-	protected int currentPos;
 	protected String stringPos;
 	protected boolean inBoard;
 	protected String symbol;
@@ -31,11 +30,6 @@ public abstract class Entity {
 	
 	public int getYPos() {
 		return yPos;
-	}
-
-
-	public int getCurrentPos() {
-		return currentPos;
 	}
 
 	public boolean isInBoard() {

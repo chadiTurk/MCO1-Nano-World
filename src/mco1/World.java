@@ -37,6 +37,7 @@ public class World {
 		
 		System.out.println(entities.get(0).size());
 		alien.generateInitialPos(gridSize);
+		alien.initialFront(gridSize);
 		nano.generateInitialPos(gridSize);
 		gold.generateInitialPos(gridSize);
 		pit.generateInitialPos(gridSize);
