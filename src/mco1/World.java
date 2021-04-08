@@ -97,7 +97,7 @@ public class World {
 	public void moveAlienDown() {
 		for(int i = 0; i<gridSize-1;i++) {
 			for(int j=0;j<gridSize;j++) {
-				if(entities.get(i).get(j) instanceof Alien && alienMoved == false) {
+				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "v") {
 					System.out.println("Value of i:" + i + " j: " + j);
 					System.out.println("executed");
 					Alien tempAlien = (Alien) entities.get(i).get(j);
@@ -112,4 +112,58 @@ public class World {
 		alienMoved = false;
 	}
 	
+	public void moveAlienUp() {
+		for(int i = 1; i<gridSize;i++) {
+			for(int j=0;j<gridSize;j++) {
+				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "^") {
+					System.out.println("Value of i:" + i + " j: " + j);
+					System.out.println("executed");
+					Alien tempAlien = (Alien) entities.get(i).get(j);
+					entities.get(i).remove(j);
+					entities.get(i-1).add(j, tempAlien);
+					entities.get(i).add(new Space());
+					alienMoved = true;
+				}
+			}
+		}
+		
+		alienMoved = false;
+	}
+	
+	public void moveAlienLeft() {
+		for(int i = 1; i<gridSize;i++) {
+			for(int j=1;j<gridSize;j++) {
+				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "<") {
+					System.out.println("Value of i:" + i + " j: " + j);
+					System.out.println("executed");
+					Alien tempAlien = (Alien) entities.get(i).get(j);
+					entities.get(i).remove(j);
+					entities.get(i).add(j-1, tempAlien);
+					entities.get(i).add(new Space());
+					alienMoved = true;
+				}
+			}
+		}
+		
+		alienMoved = false;
+	}
+	
+	public void moveAlienRight() {
+		for(int i = 0; i<gridSize-1;i++) {
+			for(int j=0;j<gridSize-1;j++) {
+				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == ">") {
+					System.out.println("Value of i:" + i + " j: " + j);
+					System.out.println("executed");
+					Alien tempAlien = (Alien) entities.get(i).get(j);
+					entities.get(i).remove(j);
+					entities.get(i).add(j+1, tempAlien);
+					entities.get(i).add(new Space());
+					alienMoved = true;
+				}
+			}
+		}
+		
+		alienMoved = false;
+	}
 }
+

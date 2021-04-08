@@ -10,31 +10,14 @@ public class Alien extends Entity {
 	public Alien(){
 		this.symbol = "A";
 		this.random = new Random();
-		this.xPos = 0;
-		this.yPos = 0;
+		this.xPos = 3;
+		this.yPos = 3;
 		this.randomFront = new ArrayList<>();
 	}
 	
 	@Override
 	public String toString() {
 		return this.symbol + this.front;
-	}
-	
-	public void move(int gridSize) {
-		
-		if(this.front == "v") {
-			moveDown();
-		}
-		else if(this.front == "^" && xPos != 0) {
-			moveUp();
-		}
-		else if(this.front == "<" && yPos !=0) {
-			moveLeft();
-		}
-		
-		else if(this.front == ">" && yPos != gridSize - 1) {
-			moveRight();
-		}
 	}
 	
 	public void generateFront(int gridSize) {
@@ -132,21 +115,6 @@ public class Alien extends Entity {
 	}
 	
 	
-	public void moveLeft() {
-		this.yPos -=1;
-	}
-	
-	public void moveRight() {
-		this.yPos += 1;
-	}
-	
-	public void moveUp() {
-		this.xPos -=1;
-	}
-	
-	public void moveDown() {
-		this.xPos +=1;
-	}
 	
 	public void rotate() { //change direction of symbol but make sure that it points to a valid location e.g. edge of board
 		
@@ -161,4 +129,15 @@ public class Alien extends Entity {
 	public void shoot() { //shoot nano
 		
 	}
+
+	public String getFront() {
+		return front;
+	}
+
+	public void setFront(String front) {
+		this.front = front;
+	}
+	
+	
+	
 }
