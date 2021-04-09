@@ -67,9 +67,20 @@ public class World {
 	
 	public void initializeEntities() {
 		alien.generateFront(gridSize);
-		nano.generateInitialPos(gridSize);
-		gold.generateInitialPos(gridSize);
-		pit.generateInitialPos(gridSize);
+		
+		do {
+			nano.generateInitialPos(gridSize);
+			gold.generateInitialPos(gridSize);
+			pit.generateInitialPos(gridSize);
+		}while((nano.xPos == gold.xPos && nano.yPos == gold.yPos) || 
+				(nano.xPos == pit.xPos && nano.yPos == pit.yPos) ||
+				(gold.xPos == pit.xPos && gold.yPos == pit.yPos) ||
+				(gold.xPos == 0 && gold.yPos == 0) || (nano.xPos == 0 && nano.yPos == 0) ||
+				(pit.xPos == 0 || pit.yPos == 0) 
+				);
+		
+		// fix this pls
+		//reroll if more than two are equal x pos and y pos!!
 		
 	}
 	
@@ -207,10 +218,10 @@ public class World {
 			for(int j=1;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "<") {
 					if(entities.get(i).get(j-1) instanceof Gold){
-						entities.get(i).remove(j-1);
 						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
-						entities.get(i).add(j-1,tempAlien);
+						entities.get(i).set(j-1,tempAlien);
+						
 						entities.get(i).add(j,new Space());
 						alienMoved = true;
 						alien.setHasGold(true);

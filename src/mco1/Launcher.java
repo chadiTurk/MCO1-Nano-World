@@ -35,7 +35,7 @@ public class Launcher  extends TimerTask{
 		world.drawBoard();
 		
 		if(world.alienIsAlive()) {
-			timer.schedule(new Launcher(),0,numberOfSeconds);
+			timer.schedule(new Launcher(),0,50);
 		}
 		
 		
