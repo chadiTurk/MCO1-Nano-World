@@ -47,27 +47,25 @@ public class Launcher  extends TimerTask{
 	}
 	@Override
 	public void run() {
-//		int randomNumber;
-//		
-//		if(world.alienIsAlive()) {
-//			 randomNumber = random.nextInt(2);
-//			
-//			if(randomNumber == 1) {
-//				world.moveAlien();
-//			}
-//			else {
-//				world.rotateAlien();
-//			}
-//			
-//			world.drawBoard();
-//		}
-//		else {
-//			timer.cancel();
-//		}
-//		
+		int randomNumber;
 		
-		world.moveAlienDown();
-		world.drawBoard();
+		if(world.alienIsAlive()) {
+			 randomNumber = random.nextInt(2);
+			
+			if(randomNumber == 1) {
+				world.moveAlien();
+			}
+			else {
+				world.rotateAlien();
+			}
+			
+			world.drawBoard();
+		}
+		else {
+			timer.cancel();
+		}
+		
+
 	}
 	
 	

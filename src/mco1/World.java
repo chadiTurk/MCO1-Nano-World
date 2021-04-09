@@ -75,9 +75,9 @@ public class World {
 	
 	public void drawBoard() {	
 		
-		for(int i=0;i<gridSize;i++) {
+		for(int i=0;i<entities.size();i++) {
 			System.out.print("      ");
-			for(int j=0;j<gridSize;j++) {
+			for(int j=0;j<entities.size();j++) {
 				if(entities.get(i).get(j) instanceof Alien) {
 					System.out.print(entities.get(i).get(j));
 				}
@@ -108,7 +108,7 @@ public class World {
 	
 	public void moveAlienDown() {
 	
-		for(int i = 0; i<gridSize-1;i++) {
+		for(int i = 0;i<gridSize-1;i++) {
 			for(int j=0;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "v") {
 					if(entities.get(i+1).get(j) instanceof Gold){
@@ -135,14 +135,15 @@ public class World {
 					}
 					else {
 							
-					
+			
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
-							entities.get(i+1).add(j, tempAlien);
-							entities.get(i).add(j,new Space());
+							entities.get(i+1).set(j, tempAlien);
+							entities.get(i).add(j, new Space());
+							
 							alienMoved = true;
 						
-							
+							System.out.println("okay");
 						}
 						
 				
@@ -185,7 +186,8 @@ public class World {
 					else {
 						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
-						entities.get(i-1).add(j, tempAlien);
+						entities.get(i).add(j, new Space());
+						entities.get(i-1).set(j, tempAlien);
 //						entities.get(i).add(j,new Space());
 						alienMoved = true;
 					
