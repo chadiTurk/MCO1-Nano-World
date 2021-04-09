@@ -24,8 +24,6 @@ public class World {
 	
 	public void initializeWorld() {
 		
-
-		
 		for(int i=0;i<gridSize;i++) {
 				this.entities.add(new ArrayList<Entity>());
 		}
@@ -35,12 +33,8 @@ public class World {
 				entities.get(i).add(new Space());
 			}
 		}
-		
-		System.out.println(entities.get(0).size());
-		alien.generateFront(gridSize);
-		nano.generateInitialPos(gridSize);
-		gold.generateInitialPos(gridSize);
-		pit.generateInitialPos(gridSize);
+				
+		initializeEntities();
 		
 		for(int i=0;i<gridSize;i++) {
 			for(int j=0;j<gridSize;j++) {
@@ -71,6 +65,14 @@ public class World {
 		
 	}
 	
+	public void initializeEntities() {
+		alien.generateFront(gridSize);
+		nano.generateInitialPos(gridSize);
+		gold.generateInitialPos(gridSize);
+		pit.generateInitialPos(gridSize);
+		gold.xPos = 6;
+		gold.yPos = 0;
+	}
 	
 	public void drawBoard() {
 		
@@ -98,13 +100,26 @@ public class World {
 		for(int i = 0; i<gridSize-1;i++) {
 			for(int j=0;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "v") {
-					System.out.println("Value of i:" + i + " j: " + j);
-					System.out.println("executed");
-					Alien tempAlien = (Alien) entities.get(i).get(j);
-					entities.get(i).remove(j);
-					entities.get(i+1).add(j, tempAlien);
-					entities.get(i).add(new Space());
-					alienMoved = true;
+					if(entities.get(i+1).get(j) instanceof Gold){
+						entities.get(i+1).remove(j);
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i+1).add(j,tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+						alien.setHasGold(true);
+						System.out.println("Search successful");
+					}
+					else {
+						System.out.println("Value of i:" + i + " j: " + j);
+						System.out.println("executed");
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i+1).add(j, tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+					}
+				
 				}
 			}
 		}
@@ -116,13 +131,26 @@ public class World {
 		for(int i = 1; i<gridSize;i++) {
 			for(int j=0;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "^") {
-					System.out.println("Value of i:" + i + " j: " + j);
-					System.out.println("executed");
-					Alien tempAlien = (Alien) entities.get(i).get(j);
-					entities.get(i).remove(j);
-					entities.get(i-1).add(j, tempAlien);
-					entities.get(i).add(new Space());
-					alienMoved = true;
+					if(entities.get(i-1).get(j) instanceof Gold){
+						entities.get(i-1).remove(j);
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i-1).add(j,tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+						alien.setHasGold(true);
+						System.out.println("Search successful");
+					}
+					else {
+						System.out.println("Value of i:" + i + " j: " + j);
+						System.out.println("executed");
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i-1).add(j, tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+					}
+					
 				}
 			}
 		}
@@ -131,16 +159,29 @@ public class World {
 	}
 	
 	public void moveAlienLeft() {
-		for(int i = 1; i<gridSize;i++) {
+		for(int i = 0; i<gridSize;i++) {
 			for(int j=1;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "<") {
-					System.out.println("Value of i:" + i + " j: " + j);
-					System.out.println("executed");
-					Alien tempAlien = (Alien) entities.get(i).get(j);
-					entities.get(i).remove(j);
-					entities.get(i).add(j-1, tempAlien);
-					entities.get(i).add(new Space());
-					alienMoved = true;
+					if(entities.get(i).get(j-1) instanceof Gold) {
+						entities.get(i).remove(j-1);
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i).add(j-1,tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+						alien.setHasGold(true);
+						System.out.println("Search successful");
+					}
+					else {
+						System.out.println("Value of i:" + i + " j: " + j);
+						System.out.println("executed");
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i).add(j-1, tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+					}
+					
 				}
 			}
 		}
@@ -152,13 +193,26 @@ public class World {
 		for(int i = 0; i<gridSize-1;i++) {
 			for(int j=0;j<gridSize-1;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == ">") {
-					System.out.println("Value of i:" + i + " j: " + j);
-					System.out.println("executed");
-					Alien tempAlien = (Alien) entities.get(i).get(j);
-					entities.get(i).remove(j);
-					entities.get(i).add(j+1, tempAlien);
-					entities.get(i).add(new Space());
-					alienMoved = true;
+					if(entities.get(i).get(j+1) instanceof Gold){
+						entities.get(i).remove(j+1);
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i).add(j+1,tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+						alien.setHasGold(true);
+						System.out.println("Search successful");
+					}
+					else {
+						System.out.println("Value of i:" + i + " j: " + j);
+						System.out.println("executed");
+						Alien tempAlien = (Alien) entities.get(i).get(j);
+						entities.get(i).remove(j);
+						entities.get(i).add(j+1, tempAlien);
+						entities.get(i).add(new Space());
+						alienMoved = true;
+					}
+					
 				}
 			}
 		}

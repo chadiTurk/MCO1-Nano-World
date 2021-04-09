@@ -21,6 +21,20 @@ public class Launcher {
 		world.initializeWorld();
 		world.drawBoard();
 		
+		world.moveAlienDown();
+		world.drawBoard();
+		world.moveAlienDown();
+		world.drawBoard();
+		world.moveAlienDown();
+		world.drawBoard();
+		world.moveAlienDown();
+		world.drawBoard();
+		world.moveAlienDown();
+		world.drawBoard();
+		world.moveAlienDown();
+		world.drawBoard();
+		world.moveAlienDown();
+		world.drawBoard();
 		
 		
 		scanner.close(); // put at end of the function

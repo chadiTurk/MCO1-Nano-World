@@ -18,8 +18,6 @@ public abstract class Entity {
 		xPos = ThreadLocalRandom.current().nextInt(0, gridSize);
 		
 		yPos = ThreadLocalRandom.current().nextInt(0, gridSize);
-	
-	
 	}
 	
 

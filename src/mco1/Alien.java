@@ -3,16 +3,21 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
 
 public class Alien extends Entity {
+	
 	private String front;
 	private Random random;
 	private ArrayList<Integer> randomFront;
+	private boolean hasGold;
+	private boolean isAlive;
 	
 	public Alien(){
 		this.symbol = "A";
 		this.random = new Random();
-		this.xPos = 3;
-		this.yPos = 3;
+		this.xPos = 0;
+		this.yPos = 0;
 		this.randomFront = new ArrayList<>();
+		this.hasGold = false;
+		this.isAlive = true;
 	}
 	
 	@Override
@@ -138,6 +143,8 @@ public class Alien extends Entity {
 		this.front = front;
 	}
 	
-	
+	public void setHasGold(boolean status) {
+		this.hasGold = status;
+	}
 	
 }
