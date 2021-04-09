@@ -33,10 +33,10 @@ public class World {
 				entities.get(i).add(new Space());
 			}
 		}
-				
+			
 		initializeEntities();
 		
-		for(int i=0;i<gridSize;i++) {
+		for(int i=0;i<gridSize-1;i++) {
 			for(int j=0;j<gridSize;j++) {
 			
 				if((i == alien.getXPos() && j == alien.getYPos()) && alien.isInBoard() == false){
@@ -107,6 +107,7 @@ public class World {
 	}
 	
 	public void moveAlienDown() {
+	
 		for(int i = 0; i<gridSize-1;i++) {
 			for(int j=0;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "v") {
@@ -119,7 +120,7 @@ public class World {
 						alienMoved = true;
 						alien.setHasGold(true);
 						System.out.println("Search successful");
-					}
+					}	
 					else if(entities.get(i+1).get(j) instanceof Pit || entities.get(i+1).get(j) instanceof Nano ) {
 						this.alien.setIsAlive(false);
 						entities.get(i).remove(j);
@@ -133,18 +134,24 @@ public class World {
 						
 					}
 					else {
-						System.out.println("executed");
-						Alien tempAlien = (Alien) entities.get(i).get(j);
-						entities.get(i).remove(j);
-						entities.get(i+1).add(j, tempAlien);
-						entities.get(i).add(j,new Space());
-						alienMoved = true;
-					}
+							
+					
+							Alien tempAlien = (Alien) entities.get(i).get(j);
+							entities.get(i).remove(j);
+							entities.get(i+1).add(j, tempAlien);
+							entities.get(i).add(j,new Space());
+							alienMoved = true;
+						
+							
+						}
+						
 				
 				}
 			}
 		}
-		
+		if(alienIsAlive()) {
+			System.out.println(System.lineSeparator().repeat(50));
+		}
 		alienMoved = false;
 	}
 	
@@ -176,18 +183,20 @@ public class World {
 						
 					}
 					else {
-						System.out.println("executed");
 						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
 						entities.get(i-1).add(j, tempAlien);
-						entities.get(i).add(j,new Space());
+//						entities.get(i).add(j,new Space());
 						alienMoved = true;
+					
 					}
 					
 				}
 			}
 		}
-		
+		if(alienIsAlive()) {
+			System.out.println(System.lineSeparator().repeat(50));
+		}
 		alienMoved = false;
 	}
 	
@@ -197,7 +206,9 @@ public class World {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "<") {
 					if(entities.get(i).get(j-1) instanceof Gold){
 						entities.get(i).remove(j-1);
+						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
+						entities.get(i).add(j-1,tempAlien);
 						entities.get(i).add(j,new Space());
 						alienMoved = true;
 						alien.setHasGold(true);
@@ -216,16 +227,19 @@ public class World {
 						
 					}
 					else {
-						System.out.println("executed");
 						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
 						entities.get(i).add(j-1, tempAlien);
-						entities.get(i).add(j,new Space());
+//						entities.get(i).add(j,new Space());
 						alienMoved = true;
 					}
 					
 				}
 			}
+		}
+		
+		if(alienIsAlive()) {
+			System.out.println(System.lineSeparator().repeat(50));
 		}
 		
 		alienMoved = false;
@@ -258,23 +272,62 @@ public class World {
 						
 					}
 					else {
-						System.out.println("executed");
 						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
-						entities.get(i).add(j+1, tempAlien);
-						entities.get(i).add(j,new Space());
+						entities.get(i).add(j+1,tempAlien);
+//						entities.get(i).add(j,new Space());
 						alienMoved = true;
+						
 					}
 					
 				}
 			}
 		}
-		
+		if(alienIsAlive()) {
+			System.out.println(System.lineSeparator().repeat(50));
+		}
 		alienMoved = false;
 	}
 	
+
+	
 	public boolean alienIsAlive() {
 		return this.alien.getIsAlive();
+	}
+	
+	public String scanFrontOfAlien() {
+				
+		for(int i =0;i<gridSize;i++) {
+			for(int j=0;j<gridSize;j++) {
+				if(entities.get(i).get(j) instanceof Alien) {
+					if(alien.getFront() == "^") {
+						if(i!=0) {
+							return entities.get(i).get(j).getSymbol();
+						}
+							
+					}
+					else if(alien.getFront() == ">") {
+						
+					}
+					else if(alien.getFront() == "v") {
+						
+					}
+					else if(alien.getFront() == "<") {
+						
+					}
+				}
+			}
+		}
+		
+		return "";
+		
+	}
+	
+	public void rotateAlien() {
+		this.alien.rotate();
+		if(alienIsAlive()) {
+			System.out.println(System.lineSeparator().repeat(50));
+		}
 	}
 }
 

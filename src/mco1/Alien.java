@@ -165,10 +165,13 @@ public class Alien extends Entity {
 	}
 
 	public String scan() {
+		
+		
+		
 		return entityInFront;
 	}
 
-	public void setEntityInFront(String entityInFront) {
+	public void setScan(String entityInFront) {
 		this.entityInFront = entityInFront;
 	}
 	
