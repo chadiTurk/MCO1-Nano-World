@@ -70,8 +70,8 @@ public class World {
 		nano.generateInitialPos(gridSize);
 		gold.generateInitialPos(gridSize);
 		pit.generateInitialPos(gridSize);
-		gold.xPos = 6;
-		gold.yPos = 0;
+		gold.xPos = 0;
+		gold.yPos = 1;
 	}
 	
 	public void drawBoard() {
@@ -162,11 +162,9 @@ public class World {
 		for(int i = 0; i<gridSize;i++) {
 			for(int j=1;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == "<") {
-					if(entities.get(i).get(j-1) instanceof Gold) {
+					if(entities.get(i).get(j-1) instanceof Gold){
 						entities.get(i).remove(j-1);
-						Alien tempAlien = (Alien) entities.get(i).get(j);
 						entities.get(i).remove(j);
-						entities.get(i).add(j-1,tempAlien);
 						entities.get(i).add(new Space());
 						alienMoved = true;
 						alien.setHasGold(true);

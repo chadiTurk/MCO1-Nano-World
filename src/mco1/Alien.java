@@ -14,7 +14,7 @@ public class Alien extends Entity {
 		this.symbol = "A";
 		this.random = new Random();
 		this.xPos = 0;
-		this.yPos = 0;
+		this.yPos = 7;
 		this.randomFront = new ArrayList<>();
 		this.hasGold = false;
 		this.isAlive = true;
