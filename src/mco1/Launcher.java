@@ -8,7 +8,7 @@ public class Launcher  extends TimerTask{
 	private static int gridSize;
 	private static Timer timer = new Timer();
 	private static World world;
-	private static int numberOfSeconds;
+	private static int speed;
 	
 	Random random = new Random();
 	public static void main(String[] args) {
@@ -28,14 +28,18 @@ public class Launcher  extends TimerTask{
 		
 		
 		world = new World(gridSize);
-		System.out.println("Enter number of seconds between each move:");
-		numberOfSeconds = scanner.nextInt() * 1000 ;
+		
+		do {
+			System.out.println("Enter speed from 1 - 10 (1 being the fastest) : ");
+			speed = scanner.nextInt();
+		}while(speed < 1 || speed > 10);
+		
 		
 		world.initializeWorld();
 		world.drawBoard();
 		
 		if(world.alienIsAlive()) {
-			timer.schedule(new Launcher(),0,50);
+			timer.schedule(new Launcher(),0, speed * 100);
 		}
 		
 		
@@ -49,7 +53,7 @@ public class Launcher  extends TimerTask{
 	public void run() {
 		int randomNumber;
 		
-		if(world.alienIsAlive()) {
+		if(world.alienIsAlive() && !(world.alienHasGold())){
 			 randomNumber = random.nextInt(2);
 			
 			if(randomNumber == 1) {

@@ -10,6 +10,9 @@ public class Alien extends Entity {
 	private String entityInFront;
 	private boolean hasGold;
 	private boolean isAlive;
+	private int numberOfRotations;
+	private int numberOfMovements;
+	private int numberOfScans;
 	
 	public Alien(){
 		this.symbol = "A";
@@ -20,6 +23,10 @@ public class Alien extends Entity {
 		this.hasGold = false;
 		this.isAlive = true;
 		this.entityInFront = "";
+		this.numberOfRotations = 0;
+		this.numberOfMovements = 0;
+		this.numberOfScans = 0;
+	
 	}
 	
 	@Override
@@ -174,6 +181,44 @@ public class Alien extends Entity {
 	public void setScan(String entityInFront) {
 		this.entityInFront = entityInFront;
 	}
+
+	public Random getRandom() {
+		return random;
+	}
+
+	public ArrayList<Integer> getRandomFront() {
+		return randomFront;
+	}
+
+	public String getEntityInFront() {
+		return entityInFront;
+	}
+
+	public boolean HasGold() {
+		return hasGold;
+	}
+
+	public int getNumberOfRotations() {
+		return numberOfRotations;
+	}
+
+	public int getNumberOfMovements() {
+		return numberOfMovements;
+	}
+
+	public int getNumberOfScans() {
+		return numberOfScans;
+	}
 	
+	public void incrementRotation() {
+		this.numberOfRotations++;
+	}
 	
+	public void incrementMovement() {
+		this.numberOfMovements++;
+	}
+	
+	public void incrementScan() {
+		this.numberOfScans++;
+	}
 }

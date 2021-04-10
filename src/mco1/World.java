@@ -36,23 +36,26 @@ public class World {
 			
 		initializeEntities();
 		
-		for(int i=0;i<gridSize-1;i++) {
+	
+		for(int i=0;i<gridSize;i++) {
 			for(int j=0;j<gridSize;j++) {
 			
-				if((i == alien.getXPos() && j == alien.getYPos()) && alien.isInBoard() == false){
+				
+				if((i == alien.getXPos() && j == alien.getYPos())){
 					entities.get(i).set(j,alien);
 					alien.setInBoard(true);
 				}
 				
-				else if((i == nano.getXPos() && j == nano.getYPos()) && nano.isInBoard() == false){
+				else if((i == nano.getXPos() && j == nano.getYPos())){
+					
 					entities.get(i).set(j,nano);
 					nano.setInBoard(true);
 				}
-				else if((i == gold.getXPos() && j == gold.getYPos()) && gold.isInBoard() == false){
+				else if((i == gold.getXPos() && j == gold.getYPos())){
 					entities.get(i).set(j,gold);
 					gold.setInBoard(true);
 				}
-				else if((i == pit.getXPos() && j == gold.getYPos()) && pit.isInBoard() == false) {
+				else if((i == pit.getXPos() && j == pit.getYPos())) {
 					entities.get(i).set(j,pit);
 					pit.setInBoard(true);
 				}
@@ -79,12 +82,15 @@ public class World {
 				(pit.xPos == 0 || pit.yPos == 0) 
 				);
 		
-		// fix this pls
-		//reroll if more than two are equal x pos and y pos!!
+	
 		
 	}
 	
 	public void drawBoard() {	
+		
+		if(!(alienIsAlive()) || alienHasGold()) {
+			System.out.println(System.lineSeparator().repeat(150));
+		}
 		
 		for(int i=0;i<entities.size();i++) {
 			System.out.print("      ");
@@ -102,6 +108,19 @@ public class World {
 			}
 
 		}
+		
+		if(!(alienIsAlive())) {
+			System.out.println("Game over! The alien has died!");
+		}
+		else if(alienHasGold()) {
+			System.out.println("Search successful!");
+		}
+		
+		System.out.println("Total moves: " + this.alien.getNumberOfMovements());
+		System.out.println("Total rotate: " + this.alien.getNumberOfRotations());
+		System.out.println("Total scan: " + this.alien.getNumberOfScans());
+		
+		
 	}
 	
 	public void moveAlien() {
@@ -130,18 +149,18 @@ public class World {
 						entities.get(i).add(j,new Space());
 						alienMoved = true;
 						alien.setHasGold(true);
-						System.out.println("Search successful");
+//						System.out.println("Search successful");
 					}	
 					else if(entities.get(i+1).get(j) instanceof Pit || entities.get(i+1).get(j) instanceof Nano ) {
 						this.alien.setIsAlive(false);
 						entities.get(i).remove(j);
 						entities.get(i).add(j,new Space());
-						if(entities.get(i+1).get(j) instanceof Pit) {
-							System.out.println("Game over! The alien has fallen into a pit!");
-						}
-						else if(entities.get(i+1).get(j) instanceof Nano) {
-							System.out.println("Game over! Nano has killed the alien!");
-						}
+//						if(entities.get(i+1).get(j) instanceof Pit) {
+//							System.out.println("Game over! The alien has fallen into a pit!");
+//						}
+//						else if(entities.get(i+1).get(j) instanceof Nano) {
+//							System.out.println("Game over! Nano has killed the alien!");
+//						}
 						
 					}
 					else {
@@ -153,17 +172,16 @@ public class World {
 							entities.get(i).add(j, new Space());
 							
 							alienMoved = true;
-						
-							System.out.println("okay");
 						}
 						
 				
 				}
 			}
 		}
-		if(alienIsAlive()) {
-			System.out.println(System.lineSeparator().repeat(50));
+		if(alienIsAlive() && !(alienHasGold())) {
+			System.out.println(System.lineSeparator().repeat(150));
 		}
+		this.alien.incrementMovement();
 		alienMoved = false;
 	}
 	
@@ -179,19 +197,19 @@ public class World {
 						entities.get(i).add(j,new Space());
 						alienMoved = true;
 						alien.setHasGold(true);
-						System.out.println("Search successful");
+//						System.out.println("Search successful");
 					}
 					else if(entities.get(i-1).get(j) instanceof Pit || entities.get(i-1).get(j) instanceof Nano) {
 						this.alien.setIsAlive(false);
 						entities.get(i).remove(j);
 						entities.get(i).add(j,new Space());
 						
-						if(entities.get(i-1).get(j) instanceof Pit) {
-							System.out.println("Game over! The alien has fallen into a pit!");
-						}
-						else if(entities.get(i-1).get(j) instanceof Nano) {
-							System.out.println("Game over! Nano has killed the alien!");
-						}
+//						if(entities.get(i-1).get(j) instanceof Pit) {
+//							System.out.println("Game over! The alien has fallen into a pit!");
+//						}
+//						else if(entities.get(i-1).get(j) instanceof Nano) {
+//							System.out.println("Game over! Nano has killed the alien!");
+//						}
 						
 					}
 					else {
@@ -207,9 +225,11 @@ public class World {
 				}
 			}
 		}
-		if(alienIsAlive()) {
-			System.out.println(System.lineSeparator().repeat(50));
+		if(alienIsAlive() && !(alienHasGold())) {
+			System.out.println(System.lineSeparator().repeat(150));
 		}
+		
+		this.alien.incrementMovement();
 		alienMoved = false;
 	}
 	
@@ -225,18 +245,18 @@ public class World {
 						entities.get(i).add(j,new Space());
 						alienMoved = true;
 						alien.setHasGold(true);
-						System.out.println("Search successful");
+//						System.out.println("Search successful");
 					}
 					else if(entities.get(i).get(j-1) instanceof Pit || entities.get(i).get(j-1) instanceof Nano ) {
 						this.alien.setIsAlive(false);
 						entities.get(i).remove(j);
 						entities.get(i).add(j,new Space());
-						if(entities.get(i).get(j-1) instanceof Pit) {
-							System.out.println("Game over! The alien has fallen into a pit!");
-						}
-						else if(entities.get(i).get(j-1) instanceof Nano) {
-							System.out.println("Game over! Nano has killed the alien!");
-						}
+//						if(entities.get(i).get(j-1) instanceof Pit) {
+//							System.out.println("Game over! The alien has fallen into a pit!");
+//						}
+//						else if(entities.get(i).get(j-1) instanceof Nano) {
+//							System.out.println("Game over! Nano has killed the alien!");
+//						}
 						
 					}
 					else {
@@ -251,10 +271,12 @@ public class World {
 			}
 		}
 		
-		if(alienIsAlive()) {
-			System.out.println(System.lineSeparator().repeat(50));
+		if(alienIsAlive() && !(alienHasGold())) {
+			System.out.println(System.lineSeparator().repeat(150));
 		}
 		
+		
+		this.alien.incrementMovement();
 		alienMoved = false;
 	}
 	
@@ -263,25 +285,23 @@ public class World {
 			for(int j=0;j<gridSize-1;j++) {
 				if(entities.get(i).get(j) instanceof Alien && alienMoved == false && alien.getFront() == ">") {
 					if(entities.get(i).get(j+1) instanceof Gold){
-						entities.get(i).remove(j+1);
 						Alien tempAlien = (Alien) entities.get(i).get(j);
-						entities.get(i).remove(j);
-						entities.get(i).add(j+1,tempAlien);
-						entities.get(i).add(j,new Space());
+						entities.get(i).set(j+1,tempAlien);
+						entities.get(i).set(j,new Space());
 						alienMoved = true;
 						alien.setHasGold(true);
-						System.out.println("Search successful");
+//						System.out.println("Search successful");
 					}
 					else if(entities.get(i).get(j+1) instanceof Pit || entities.get(i).get(j+1) instanceof Nano) {
 						this.alien.setIsAlive(false);
 						entities.get(i).remove(j);
 						entities.get(i).add(j,new Space());
-						if(entities.get(i).get(j+1) instanceof Pit) {
-							System.out.println("Game over! The alien has fallen into a pit!");
-						}
-						else if(entities.get(i).get(j+1) instanceof Nano) {
-							System.out.println("Game over! Nano has killed the alien!");
-						}
+//						if(entities.get(i).get(j+1) instanceof Pit) {
+//							System.out.println("Game over! The alien has fallen into a pit!");
+//						}
+//						else if(entities.get(i).get(j+1) instanceof Nano) {
+//							System.out.println("Game over! Nano has killed the alien!");
+//						}
 						
 					}
 					else {
@@ -296,9 +316,11 @@ public class World {
 				}
 			}
 		}
-		if(alienIsAlive()) {
-			System.out.println(System.lineSeparator().repeat(50));
+		if(alienIsAlive() && !(alienHasGold())){
+			System.out.println(System.lineSeparator().repeat(150));
 		}
+		
+		this.alien.incrementMovement();
 		alienMoved = false;
 	}
 	
@@ -338,9 +360,16 @@ public class World {
 	
 	public void rotateAlien() {
 		this.alien.rotate();
+		this.alien.incrementRotation();
 		if(alienIsAlive()) {
-			System.out.println(System.lineSeparator().repeat(50));
+			System.out.println(System.lineSeparator().repeat(150));
 		}
+	}
+	
+
+	
+	public boolean alienHasGold() {
+		return this.alien.HasGold();
 	}
 }
 
