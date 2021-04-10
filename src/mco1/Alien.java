@@ -22,11 +22,10 @@ public class Alien extends Entity {
 		this.randomFront = new ArrayList<>();
 		this.hasGold = false;
 		this.isAlive = true;
-		this.entityInFront = "";
+		this.entityInFront = "*";
 		this.numberOfRotations = 0;
 		this.numberOfMovements = 0;
 		this.numberOfScans = 0;
-	
 	}
 	
 	@Override
@@ -147,7 +146,7 @@ public class Alien extends Entity {
 	}
 	
 	
-	public void shoot() { //shoot nano
+	public void shoot() { 
 		
 	}
 
@@ -172,10 +171,16 @@ public class Alien extends Entity {
 	}
 
 	public String scan() {
-		
-		
-		
-		return entityInFront;
+		if(entityInFront == "P") {
+			return "breeze";
+		}
+		else if(entityInFront == "N") {
+			return "smell";
+		}
+		else if(entityInFront == "G") {
+			return "glitter";
+		}
+		else return "null";
 	}
 
 	public void setScan(String entityInFront) {

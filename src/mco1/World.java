@@ -119,7 +119,8 @@ public class World {
 		System.out.println("Total moves: " + this.alien.getNumberOfMovements());
 		System.out.println("Total rotate: " + this.alien.getNumberOfRotations());
 		System.out.println("Total scan: " + this.alien.getNumberOfScans());
-		
+		System.out.println("Latest scan result: " + alien.scan());
+
 		
 	}
 	
@@ -178,6 +179,7 @@ public class World {
 				}
 			}
 		}
+		
 		if(alienIsAlive() && !(alienHasGold())) {
 			System.out.println(System.lineSeparator().repeat(150));
 		}
@@ -316,6 +318,7 @@ public class World {
 				}
 			}
 		}
+		
 		if(alienIsAlive() && !(alienHasGold())){
 			System.out.println(System.lineSeparator().repeat(150));
 		}
@@ -330,32 +333,46 @@ public class World {
 		return this.alien.getIsAlive();
 	}
 	
-	public String scanFrontOfAlien() {
+	
+	public void scanFrontOfAlien() {
 				
 		for(int i =0;i<gridSize;i++) {
 			for(int j=0;j<gridSize;j++) {
 				if(entities.get(i).get(j) instanceof Alien) {
+					this.alien.incrementScan();
 					if(alien.getFront() == "^") {
-						if(i!=0) {
-							return entities.get(i).get(j).getSymbol();
+						if(i!=0){
+							this.alien.setScan(entities.get(i-1).get(j).getSymbol());
 						}
-							
+						else
+							this.alien.setScan("*");						
 					}
 					else if(alien.getFront() == ">") {
-						
+						if(j!= gridSize - 1) {
+							this.alien.setScan(entities.get(i).get(j+1).getSymbol());
+						}
+						else
+							this.alien.setScan("*");
 					}
 					else if(alien.getFront() == "v") {
-						
+						if(i!= gridSize - 1) {
+							this.alien.setScan(entities.get(i+1).get(j).getSymbol());
+						}
+						else
+							this.alien.setScan("*");
 					}
 					else if(alien.getFront() == "<") {
-						
+						if(j!=0) {
+							this.alien.setScan(entities.get(i).get(j-1).getSymbol());
+						}
+						else 
+							this.alien.setScan("*");
 					}
 				}
 			}
 		}
 		
-		return "";
-		
+				System.out.println(System.lineSeparator().repeat(150));
 	}
 	
 	public void rotateAlien() {

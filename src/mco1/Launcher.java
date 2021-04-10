@@ -30,9 +30,9 @@ public class Launcher  extends TimerTask{
 		world = new World(gridSize);
 		
 		do {
-			System.out.println("Enter speed from 1 - 10 (1 being the fastest) : ");
+			System.out.println("Enter speed from 1 - 20 (1 being the fastest) : ");
 			speed = scanner.nextInt();
-		}while(speed < 1 || speed > 10);
+		}while(speed < 1 || speed > 20);
 		
 		
 		world.initializeWorld();
@@ -54,13 +54,16 @@ public class Launcher  extends TimerTask{
 		int randomNumber;
 		
 		if(world.alienIsAlive() && !(world.alienHasGold())){
-			 randomNumber = random.nextInt(2);
-			
-			if(randomNumber == 1) {
+			 randomNumber = random.nextInt(3);
+		
+			if(randomNumber == 0) {
 				world.moveAlien();
 			}
-			else {
+			else if (randomNumber == 1){
 				world.rotateAlien();
+			}
+			else if(randomNumber == 2) {
+				world.scanFrontOfAlien();
 			}
 			
 			world.drawBoard();
