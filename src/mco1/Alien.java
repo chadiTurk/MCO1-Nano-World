@@ -2,6 +2,7 @@ package mco1;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
 
+
 public class Alien extends Entity {
 	
 	private String front;
