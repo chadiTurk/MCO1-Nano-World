@@ -29,6 +29,14 @@ public abstract class Entity {
 	public int getYPos() {
 		return yPos;
 	}
+	
+	public void setXPos(int x) {
+		this.xPos = x;
+	}
+	
+	public void setYPos(int y) {
+		this.yPos = y;
+	}
 
 	public boolean isInBoard() {
 		return inBoard;

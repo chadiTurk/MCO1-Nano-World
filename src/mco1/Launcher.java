@@ -13,12 +13,21 @@ public class Launcher  extends TimerTask{
 	private static int speed;
 	private static int gameOption;
 	private static int agentOption;
+	private static int userOption;
 	private static boolean scanExecuted = false;
 	private static boolean rotateExecute = false;
 	private static boolean moveExecuted = false;
 	private static int i = 0;
 	private static int j = 0 ;
 	static Random random = new Random();
+	private static int numPits;
+	private static String holder;
+	private static String[] arrsplit;
+	private static ArrayList<Integer> locPit = new ArrayList<Integer>();
+	private static ArrayList<Integer> locNano = new ArrayList<Integer>();
+	private static ArrayList<Integer> locGold = new ArrayList<Integer>();
+	
+	
 	public static void main(String[] args) {
 		
 		Launcher launcher = new Launcher();
@@ -43,19 +52,14 @@ public class Launcher  extends TimerTask{
 			agentOption = scanner.nextInt();
 		}while(agentOption < 1 || agentOption > 2);
 		
+		world = new World(gridSize,agentOption);
+		
 		do {
 			System.out.println("[1] Step by step");
 			System.out.println("[2] Continuous" );
 			System.out.print("User choice: ");
 			gameOption = scanner.nextInt();
 		}while(gameOption < 1 || gameOption > 2);
-		
-//		do {
-//			System.out.println("[1] Choose location for the entities");
-//			System.out.println("[2] Generate random locations");
-//			System.out.println("User choice: ");
-//			userOption = scanner.nextInt();
-//		}while()
 		
 		if(gameOption == 2) {
 			do {
@@ -65,8 +69,25 @@ public class Launcher  extends TimerTask{
 		}
 		
 		
+		do {
+			System.out.println("[1] Choose location for the entities");
+			System.out.println("[2] Generate random locations");
+			System.out.println("User choice: ");
+			userOption = scanner.nextInt();
+		}while(userOption <1 ||userOption>2);
+		
+		
+
+		
+		
+		
 		world = new World(gridSize,agentOption);
-		world.initializeWorld();
+		if(userOption == 2) {
+			world.initializeWorld();
+		}
+		if(userOption == 1) {
+			world.initializeWorldUser();
+		}
 		world.drawBoard();
 		
 		if(world.alienIsAlive() && agentOption == 1){
@@ -78,12 +99,15 @@ public class Launcher  extends TimerTask{
 			
 			
 			else {
-				System.out.println("executed");
+				
 				timer.schedule(new Launcher(),0, speed * 100);
 			}
 		}
 		else if(world.alienIsAlive() && agentOption == 2) {
-			
+			if(gameOption == 1) {
+				stepByStepSmart();
+			}
+			else
 			timer.schedule(new Launcher(),0, speed * 100);
 			
 		}
@@ -116,7 +140,33 @@ public class Launcher  extends TimerTask{
 		}
 		
 	}
+	
+	private static void stepByStepSmart() {
+		Scanner tempScanner = new Scanner(System.in);
+		
+		while(world.alienIsAlive() && !(world.alienHasGold())) {
+			
 
+			if(world.isSmartShoot() == true) {
+				world.shootNano();
+			}
+			else if(world.isSmartMove() == true) {
+				world.moveAlien();
+			}
+			else {
+				world.smartMove();
+				   }
+			
+			world.drawBoard();
+			
+			tempScanner.nextLine();
+			}
+			
+		
+		}
+		
+	
+	
 	@Override
 	public void run() {
 		

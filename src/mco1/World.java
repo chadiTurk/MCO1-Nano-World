@@ -27,7 +27,10 @@ public class World {
 	private boolean moveInsteadRotate;
 	private boolean alienScannedFront;
 	private int rotateSuccessions;
-	private int stuck;
+	private int numberOfPits;
+	private int xPit;
+	private int yPit;
+	private ArrayList<Pit> pits;
 	
 	public World(int gridSize,int agentOption) {
 		this.entities = new ArrayList<ArrayList<Entity>>();
@@ -35,7 +38,6 @@ public class World {
 		this.alien = new Alien();
 		this.nano = new Nano();
 		this.gold = new Gold();
-		this.pit = new Pit();
 		this.alienMoved = false;
 		this.agentOption = agentOption;
 		this.smartRotate = false;
@@ -51,7 +53,114 @@ public class World {
 		this.moveInsteadRotate = false;
 		this.alienScannedFront = false;
 		this.rotateSuccessions = 0;
-		this.stuck = 0;
+		this.pits = new ArrayList<>();
+		this.numberOfPits = 0;
+		this.pit = new Pit();
+
+	}
+	
+	
+	public void initializeWorldUser() {
+		
+		int xNano = 0;
+		int yNano = 0;
+		int xGold = 0;
+		int yGold = 0;
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		alien.generateFront(gridSize);
+		
+		for(int i=0;i<gridSize;i++) {
+			this.entities.add(new ArrayList<Entity>());
+		}
+		
+		for(int i =0;i<gridSize;i++) {
+			for(int j=0;j<gridSize;j++) {
+				entities.get(i).add(new Space());
+			}
+		}
+		
+		
+		System.out.println("Enter number of pits:");
+		this.numberOfPits = scanner.nextInt();
+		
+		for(int n = 0;n<numberOfPits;n++) {
+			
+			System.out.println("Pit " + (n+1) + ":");
+			
+			System.out.print("Enter x coordinate: ");
+			this.xPit = scanner.nextInt();
+			
+			System.out.print("Enter y coordinate: ");
+			this.yPit = scanner.nextInt();
+			
+			Pit pit = new Pit();
+			
+			pit.setX(xPit);
+			pit.setY(yPit);
+			
+			this.pits.add(pit);
+		}
+		
+		System.out.println("Enter location for nano: ");
+		
+		System.out.print("Enter x coordinate:");
+		xNano = scanner.nextInt();
+		System.out.print("Enter y coordinate: ");
+		yNano = scanner.nextInt();
+		
+		nano.setXPos(xNano);
+		nano.setYPos(yNano);
+		
+		System.out.println("Enter location for gold: ");
+		
+		System.out.print("Enter x coordinate:");
+		xGold = scanner.nextInt();
+		System.out.print("Enter y coordinate: ");
+		yGold = scanner.nextInt();
+		
+		gold.setXPos(xGold);
+		gold.setYPos(yGold);
+		
+		
+		
+		for(int i = 0;i<gridSize;i++) {
+			for(int j = 0;j<gridSize;j++) {
+				
+				for(int n = 0;n<this.pits.size();n++) {
+					if(i == pits.get(n).getX() && j == pits.get(n).getY()) {
+					 entities.get(i).set(j,pits.get(n));
+					}
+				}
+			}
+		}
+		
+		for(int i=0;i<gridSize;i++) {
+			for(int j=0;j<gridSize;j++) {
+			
+				
+				if((i == alien.getXPos() && j == alien.getYPos())){
+					entities.get(i).set(j,alien);
+					alien.setInBoard(true);
+				}
+				
+				else if((i == nano.getXPos() && j == nano.getYPos())){
+					
+					entities.get(i).set(j,nano);
+					nano.setInBoard(true);
+				}
+				else if((i == gold.getXPos() && j == gold.getYPos())){
+					entities.get(i).set(j,gold);
+					gold.setInBoard(true);
+				}
+				
+			  }
+			}
+		
+		
+		
+		
 	}
 	
 	public void initializeWorld() {
@@ -64,6 +173,12 @@ public class World {
 			for(int j=0;j<gridSize;j++) {
 				entities.get(i).add(new Space());
 			}
+		}
+		
+	
+		
+		for(int i = 0;i<this.numberOfPits;i++) {
+			this.pits.add(new Pit());
 		}
 			
 		initializeEntities();
@@ -102,6 +217,8 @@ public class World {
 	
 	public void initializeEntities() {
 		alien.generateFront(gridSize);
+		
+		
 		
 		do {
 			nano.generateInitialPos(gridSize);
@@ -149,7 +266,7 @@ public class World {
 		System.out.println("Total moves: " + this.alien.getNumberOfMovements());
 		System.out.println("Total rotate: " + this.alien.getNumberOfRotations());
 		System.out.println("Total scan: " + this.alien.getNumberOfScans());
-		
+		System.out.println("Latest scan result:" + this.alien.scan());
 		
 		
 	}
@@ -168,6 +285,8 @@ public class World {
 	}
 	
 	public void smartMove() {
+		
+		
 		if(this.alien.getFront() == "v") {
 			smartMoveAlienDown();
 		}
@@ -350,15 +469,13 @@ public class World {
 					this.alienCanMove = true;
 					
 						removeStuck(i,j);
-						
+						removeSurroundPit(i, j);
 					
 					if((checkPit(i+1,j) || checkVisit(i+1,j))){
 						this.moveInsteadRotate = true;
 						this.alienScannedFront = false;
 						rotateAlien();
-						stuck++;
-						
-						
+											
 					}		
 					
 					else {
@@ -372,22 +489,10 @@ public class World {
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
 							
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 
 						}	
 						else if((entities.get(i+1).get(j) instanceof Pit || entities.get(i+1).get(j) instanceof Nano ) && this.alienScannedFront == true) {
-//							this.alien.setIsAlive(false);
-//							entities.get(i).remove(j);
-//							entities.get(i).add(j,new Space());
-//							rotateAlien();
-////							this.alien.incrementMovement();
-////							this.scanUp = false;
-////							this.scanDown = false;
-////							this.scanLeft = false;
-////							this.scanRight = false;
+
 							rotateAlien();
 							
 						}
@@ -399,10 +504,6 @@ public class World {
 								
 								alienMoved = true;
 								this.alien.incrementMovement();
-//								this.scanUp = false;
-//								this.scanDown = false;
-//								this.scanLeft = false;
-//								this.scanRight = false;
 								visitedLocations.add(new VisitedLocation(i,j));
 								this.moveInsteadRotate = false;
 								this.alienScannedFront = false;
@@ -441,6 +542,7 @@ public class World {
 					this.alienCanMove = true;
 					
 					removeStuck(i,j);
+					removeSurroundPit(i, j);
 					
 					if((checkPit(i-1,j) || checkVisit(i-1,j))){
 						this.moveInsteadRotate = true;
@@ -461,20 +563,8 @@ public class World {
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
 							
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 						}
 						else if((entities.get(i-1).get(j) instanceof Pit || entities.get(i-1).get(j) instanceof Nano) && this.alienScannedFront == true){
-//							this.alien.setIsAlive(false);
-//							entities.get(i).remove(j);
-//							entities.get(i).add(j,new Space());
-//							this.alien.incrementMovement();
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 							rotateAlien();
 						}
 						else if(this.alienScannedFront == true){
@@ -484,10 +574,6 @@ public class World {
 							entities.get(i-1).set(j, tempAlien);
 							alienMoved = true;
 							this.alien.incrementMovement();
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 							visitedLocations.add(new VisitedLocation(i,j));
 							this.moveInsteadRotate = false;
 							this.alienScannedFront = false;
@@ -524,12 +610,12 @@ public class World {
 					this.alienCanMove = true;
 					
 					removeStuck(i,j);
-					
+					removeSurroundPit(i, j);
 					if((checkPit(i,j-1) || checkVisit(i,j-1))){
 						this.moveInsteadRotate = true;
 						rotateAlien();
 						this.alienScannedFront = false;
-						System.out.println("found");
+					
 						
 					
 						
@@ -545,21 +631,9 @@ public class World {
 							alienMoved = true;
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 						}
 						else if((entities.get(i).get(j-1) instanceof Pit || entities.get(i).get(j-1) instanceof Nano) && this.alienScannedFront == true) {
-//							this.alien.setIsAlive(false);
-//							entities.get(i).remove(j);
-//							entities.get(i).add(j,new Space());
-//							this.alien.incrementMovement();
-////							this.scanUp = false;
-////							this.scanDown = false;
-////							this.scanLeft = false;
-////							this.scanRight = false;
-//							
+						
 							rotateAlien();
 						}
 						else if(this.alienScannedFront == true) {
@@ -568,10 +642,6 @@ public class World {
 							entities.get(i).add(j-1, tempAlien);
 							alienMoved = true;
 							this.alien.incrementMovement();
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 							visitedLocations.add(new VisitedLocation(i,j));
 							this.moveInsteadRotate = false;
 							this.alienScannedFront = false;
@@ -610,13 +680,11 @@ public class World {
 					this.alienCanMove = true;
 					
 					removeStuck(i,j);
-					
+					removeSurroundPit(i, j);
 					if((checkPit(i,j+1) || checkVisit(i, j+1))) {
 						this.moveInsteadRotate = true;
 						this.alienScannedFront = false;
 						rotateAlien();
-			
-					
 						
 					}
 
@@ -628,22 +696,8 @@ public class World {
 							alienMoved = true;
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
-							
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 						}
 						else if((entities.get(i).get(j+1) instanceof Pit || entities.get(i).get(j+1) instanceof Nano)  && this.alienScannedFront == true){
-//							this.alien.setIsAlive(false);
-//							entities.get(i).remove(j);
-//							entities.get(i).add(j,new Space());
-//							this.alien.incrementMovement();
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
-							
 							rotateAlien();
 							
 						}
@@ -653,10 +707,6 @@ public class World {
 							entities.get(i).add(j+1,tempAlien);
 							alienMoved = true;
 							this.alien.incrementMovement();
-//							this.scanUp = false;
-//							this.scanDown = false;
-//							this.scanLeft = false;
-//							this.scanRight = false;
 							visitedLocations.add(new VisitedLocation(i,j));
 							this.moveInsteadRotate = false;
 							this.alienScannedFront = false;
@@ -779,7 +829,7 @@ public class World {
 		}
 		
 		
-				
+		System.out.println(System.lineSeparator().repeat(150));
 	}
 	
 	
@@ -871,10 +921,7 @@ public class World {
 		return gold;
 	}
 
-	public Pit getPit() {
-		return pit;
-	}
-
+	
 	public int getGridSize() {
 		return gridSize;
 	}
@@ -958,9 +1005,7 @@ public class World {
 		boolean stuckRight = false;
 		boolean stuckLeft = false;
 		
-		if(alien.scan() == "breeze") {
-			
-		}
+		
 		
 		for(int n = 0;n<temp;n++) {
 		
@@ -1046,12 +1091,12 @@ public class World {
 					stuckLeft = true;
 				}
 			}
-			else {
+			else 
 				
-				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+				if(this.visitedLocations.get(n).getI() == i -1 && this.visitedLocations.get(n).getJ() == j){
 					stuckUp = true;
 				}
-				if(this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j) {
+				if(this.visitedLocations.get(n).getI() == i+1 && this.visitedLocations.get(n).getJ() == j) {
 					stuckDown = true;
 				}
 				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1) {
@@ -1060,7 +1105,7 @@ public class World {
 				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
 					stuckRight = true;
 				}
-			}
+			
 		}
 		
 		int tempSize = this.visitedLocations.size();
@@ -1227,7 +1272,7 @@ public class World {
 				}
 			}
 		}
-		else {
+		
 			if(stuckDown == true && stuckUp == true && stuckLeft == true && stuckRight == true) {
 				for(int n = 0;n<tempSize;n++) {
 					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
@@ -1236,7 +1281,7 @@ public class World {
 				}
 				
 				for(int n = 0;n<tempSize;n++) {
-					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i -1  && this.visitedLocations.get(n).getJ() == j){
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i - 1  && this.visitedLocations.get(n).getJ() == j){
 						visitedLocations.remove(n);
 					}
 				}
@@ -1255,9 +1300,562 @@ public class World {
 				
 				
 			}
-		}
+		
 		
 	}
+	
+	
+	public void removeSurroundPit(int i, int j) {
+		
+		boolean stuckUp = false;
+		boolean stuckDown = false;
+		boolean stuckLeft = false;
+		boolean stuckRight = false;
+		boolean pitUp = false;
+		boolean pitDown = false;
+		boolean pitLeft = false;
+		boolean pitRight = false;
+		
+		
+		int temp = this.visitedLocations.size();
+		
+		for(int n = 0; n<temp;n++) {
+			
+			if(i == 0 && j == 0) {
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+				
+			    if(stuckDown == true) {
+			    	if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+			    }
+			    
+			    if(stuckRight == true) {
+			    	if(this.entities.get(i+1).get(j) instanceof Pit) {
+			    		pitDown = true;
+			    	}
+			    }
+			    
+			    
+			}
+			
+			else if (i == gridSize - 1 && j == 0) {
+				if(this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+				
+				
+				if(stuckUp == true) {
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+				}
+				if(stuckRight == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+				    	pitUp = true;
+				    }
+			
+				}
+				
+			
+			
+			}
+		 
+			else if (i == 0  && j == gridSize - 1 ) {
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckDown = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j - 1){
+					stuckLeft = true;
+				}
+				
+				
+				if(stuckDown == true) {
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+				}
+				if(stuckLeft == true) {
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+				    	pitDown = true;
+				    }
+			
+				}
+				
+			
+			
+			}
+			
+			else if (i == gridSize - 1  && j == gridSize - 1 ) {
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j - 1){
+					stuckLeft = true;
+				}
+				
+				
+				if(stuckUp == true) {
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+				}
+				if(stuckLeft == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+				    	pitUp = true;
+				    }
+			
+				}
+			
+			
+			
+			}
+		  
+			else if (j == 0) {
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckDown = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+				
+				if(stuckDown == true) {
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+				}
+				
+				if(stuckRight == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+				    	pitUp = true;
+				    }
+					
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+				}
+				
+				if(stuckUp == true) {
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+				}
+				
+			}
+			
+			else if (i == 0) {
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+					stuckLeft = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckDown = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+				
+				if(stuckDown == true) {
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+					
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+				}
+				
+				if(stuckRight == true) {
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+				}
+				
+				if(stuckLeft == true) {
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+				}
+			}
+			
+			else if (j == gridSize - 1) {
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckDown = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+					stuckLeft = true;
+				}
+				
+				if(stuckDown == true) {
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+				}
+				
+				if(stuckLeft == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+				    	pitUp = true;
+				    }
+					
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+				}
+				
+				if(stuckUp == true) {
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+				}
+			}
+			
+			else if (i == gridSize - 1) {
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+					stuckLeft = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+				
+				if(stuckUp == true) {
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+					
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+				}
+				
+				if(stuckRight == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+						pitUp = true;
+					}
+				}
+				
+				if(stuckLeft == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+						pitUp = true;
+					}
+				}
+			}
+			
+			else {
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+					stuckLeft = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckDown = true;
+				}
+				
+				if(stuckLeft == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+						pitUp = true;
+					}
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+					
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+					
+				}
+				
+				if(stuckRight == true) {
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+						pitUp = true;
+					}
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+					
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+					
+				}
+				
+				if(stuckUp == true) {
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+					if(this.entities.get(i+1).get(j) instanceof Pit) {
+						pitDown = true;
+					}
+					
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+					
+				}
+				
+				if(stuckDown == true) {
+					if(this.entities.get(i).get(j-1) instanceof Pit) {
+			    		pitLeft = true;
+			    	}
+					if(this.entities.get(i-1).get(j) instanceof Pit) {
+						pitUp = true;
+					}
+					
+					if(this.entities.get(i).get(j+1) instanceof Pit) {
+			    		pitRight = true;
+			    	}
+					
+				}
+				
+			}
+			
+		}
+		
+		int tempSize = this.visitedLocations.size();
+		
+		if(i == 0 && j == 0) {
+			if(stuckRight == true && pitDown == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j + 1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckDown == true && pitRight == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i +1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		
+		else if (i == gridSize - 1 && j == 0) {
+			if(stuckUp == true && pitRight == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckRight == true && pitUp == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		
+		else if (i == 0  && j == gridSize - 1 ) {
+			if(stuckLeft == true && pitDown == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckDown == true && pitLeft == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i+1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else if (i == gridSize - 1  && j == gridSize - 1 ) {
+			if(stuckLeft == true && pitUp == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckUp == true && pitLeft == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else if(j == 0 ) {
+			//up down right
+			if(stuckUp == true && (pitRight == true ||pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckDown == true && (pitRight == true ||pitUp == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i+1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckRight == true && (pitUp == true ||pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else if (i == 0) {
+			//left down right
+			if(stuckLeft == true && (pitRight == true ||pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckDown == true && (pitRight == true ||pitLeft == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i+1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckRight == true && (pitLeft == true ||pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			
+		}
+		else if (j == gridSize -1 ) {
+			//up left down
+			if(stuckUp == true && (pitLeft == true ||pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			if(stuckLeft == true && (pitUp == true ||pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckDown == true && (pitLeft == true ||pitUp == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i+1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else if (i == gridSize -1 ) {
+			//up left right
+			if(stuckUp == true && (pitLeft == true ||pitRight == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckLeft == true && (pitUp == true ||pitRight == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckRight == true && (pitUp == true ||pitLeft == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else {
+			if(stuckUp == true && (pitDown == true || pitRight == true || pitLeft == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckDown == true && (pitUp == true || pitRight == true || pitLeft == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i+1 && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckLeft == true && (pitUp == true || pitRight == true || pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+			
+			if(stuckRight == true && (pitUp == true || pitLeft == true || pitDown == true)) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		
+	  }
 	
 	public void randomMove() {
 		
@@ -1269,9 +1867,9 @@ public class World {
 			int randomNum;
 			Random random = new Random();
 			
-			randomNum = random.nextInt(2);
+			randomNum = random.nextInt(3);
 			
-			if (randomNum == 0) {
+			if (randomNum == 0 || randomNum == 2) {
 				scanFrontOfAlien();
 			}
 			else if(randomNum == 1) {
