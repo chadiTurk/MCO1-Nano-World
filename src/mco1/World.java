@@ -149,7 +149,7 @@ public class World {
 		System.out.println("Total moves: " + this.alien.getNumberOfMovements());
 		System.out.println("Total rotate: " + this.alien.getNumberOfRotations());
 		System.out.println("Total scan: " + this.alien.getNumberOfScans());
-		System.out.println("Latest scan result: " + alien.scan());
+		
 		
 		
 	}
