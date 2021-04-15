@@ -14,19 +14,10 @@ public class Launcher  extends TimerTask{
 	private static int gameOption;
 	private static int agentOption;
 	private static int userOption;
-	private static boolean scanExecuted = false;
-	private static boolean rotateExecute = false;
-	private static boolean moveExecuted = false;
-	private static int i = 0;
-	private static int j = 0 ;
+
 	static Random random = new Random();
-	private static int numPits;
-	private static String holder;
-	private static String[] arrsplit;
-	private static ArrayList<Integer> locPit = new ArrayList<Integer>();
-	private static ArrayList<Integer> locNano = new ArrayList<Integer>();
-	private static ArrayList<Integer> locGold = new ArrayList<Integer>();
-	
+
+
 	
 	public static void main(String[] args) {
 		

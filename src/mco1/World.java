@@ -263,6 +263,10 @@ public class World {
 			System.out.println("Search successful!");
 		}
 		
+		if(this.nano.isAlive() == false) {
+			System.out.println("Nano has been shot!");
+		}
+		
 		System.out.println("Total moves: " + this.alien.getNumberOfMovements());
 		System.out.println("Total rotate: " + this.alien.getNumberOfRotations());
 		System.out.println("Total scan: " + this.alien.getNumberOfScans());
@@ -468,12 +472,14 @@ public class World {
 					
 					this.alienCanMove = true;
 					
-						removeStuck(i,j);
-						removeSurroundPit(i, j);
 					
 					if((checkPit(i+1,j) || checkVisit(i+1,j))){
 						this.moveInsteadRotate = true;
 						this.alienScannedFront = false;
+						
+
+						removeStuck(i,j);
+						removeSurroundPit(i, j);
 						rotateAlien();
 											
 					}		
@@ -541,14 +547,15 @@ public class World {
 					
 					this.alienCanMove = true;
 					
-					removeStuck(i,j);
-					removeSurroundPit(i, j);
+					
 					
 					if((checkPit(i-1,j) || checkVisit(i-1,j))){
 						this.moveInsteadRotate = true;
 						this.alienScannedFront = false;
-						
+						removeStuck(i,j);
+						removeSurroundPit(i, j);
 						rotateAlien();
+						
 											
 					}
 
@@ -609,16 +616,16 @@ public class World {
 					
 					this.alienCanMove = true;
 					
-					removeStuck(i,j);
-					removeSurroundPit(i, j);
+					
 					if((checkPit(i,j-1) || checkVisit(i,j-1))){
 						this.moveInsteadRotate = true;
-						rotateAlien();
+						
 						this.alienScannedFront = false;
 					
-						
+						removeStuck(i,j);
+						removeSurroundPit(i, j);
 					
-						
+						rotateAlien();
 					}
 
 					else {
@@ -679,13 +686,14 @@ public class World {
 					
 					this.alienCanMove = true;
 					
-					removeStuck(i,j);
-					removeSurroundPit(i, j);
+					
 					if((checkPit(i,j+1) || checkVisit(i, j+1))) {
 						this.moveInsteadRotate = true;
 						this.alienScannedFront = false;
-						rotateAlien();
 						
+						removeStuck(i,j);
+						removeSurroundPit(i, j);
+						rotateAlien();
 					}
 
 					else {
@@ -876,7 +884,7 @@ public class World {
 			entities.get(iNano).set(jNano-1, new Space());
 		}
 		
-		System.out.println("Nano has been shot!");
+		this.nano.setAlive(false);
 		
 		this.smartShoot = false;
 	}
