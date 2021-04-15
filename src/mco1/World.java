@@ -25,6 +25,9 @@ public class World {
 	private ArrayList<PitLocations> pitLocations;
 	private boolean alienCanMove;
 	private boolean moveInsteadRotate;
+	private boolean alienScannedFront;
+	private int rotateSuccessions;
+	private int stuck;
 	
 	public World(int gridSize,int agentOption) {
 		this.entities = new ArrayList<ArrayList<Entity>>();
@@ -46,6 +49,9 @@ public class World {
 		this.pitLocations = new ArrayList<>();
 		this.alienCanMove = false;
 		this.moveInsteadRotate = false;
+		this.alienScannedFront = false;
+		this.rotateSuccessions = 0;
+		this.stuck = 0;
 	}
 	
 	public void initializeWorld() {
@@ -144,7 +150,7 @@ public class World {
 		System.out.println("Total rotate: " + this.alien.getNumberOfRotations());
 		System.out.println("Total scan: " + this.alien.getNumberOfScans());
 		System.out.println("Latest scan result: " + alien.scan());
-
+		
 		
 	}
 	
@@ -343,12 +349,20 @@ public class World {
 					
 					this.alienCanMove = true;
 					
+						removeStuck(i,j);
+						
+					
 					if((checkPit(i+1,j) || checkVisit(i+1,j))){
 						this.moveInsteadRotate = true;
+						this.alienScannedFront = false;
 						rotateAlien();
-					}
+						stuck++;
+						
+						
+					}		
+					
 					else {
-						if(entities.get(i+1).get(j) instanceof Gold){
+						if(entities.get(i+1).get(j) instanceof Gold && this.alienScannedFront == true){
 							entities.get(i+1).remove(j);
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
@@ -357,24 +371,27 @@ public class World {
 							alienMoved = true;
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+							
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 
 						}	
-						else if(entities.get(i+1).get(j) instanceof Pit || entities.get(i+1).get(j) instanceof Nano ) {
-							this.alien.setIsAlive(false);
-							entities.get(i).remove(j);
-							entities.get(i).add(j,new Space());
-							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+						else if((entities.get(i+1).get(j) instanceof Pit || entities.get(i+1).get(j) instanceof Nano ) && this.alienScannedFront == true) {
+//							this.alien.setIsAlive(false);
+//							entities.get(i).remove(j);
+//							entities.get(i).add(j,new Space());
+//							rotateAlien();
+////							this.alien.incrementMovement();
+////							this.scanUp = false;
+////							this.scanDown = false;
+////							this.scanLeft = false;
+////							this.scanRight = false;
+							rotateAlien();
 							
 						}
-						else {
+						else if (this.alienScannedFront == true) {
 								Alien tempAlien = (Alien) entities.get(i).get(j);
 								entities.get(i).remove(j);
 								entities.get(i+1).set(j, tempAlien);
@@ -382,15 +399,18 @@ public class World {
 								
 								alienMoved = true;
 								this.alien.incrementMovement();
-								this.scanUp = false;
-								this.scanDown = false;
-								this.scanLeft = false;
-								this.scanRight = false;
+//								this.scanUp = false;
+//								this.scanDown = false;
+//								this.scanLeft = false;
+//								this.scanRight = false;
 								visitedLocations.add(new VisitedLocation(i,j));
 								this.moveInsteadRotate = false;
+								this.alienScannedFront = false;
 								
-								System.out.println("EXECUTED");
 							}
+						else {
+							randomMove();
+						  }
 						}
 					
 						
@@ -420,12 +440,18 @@ public class World {
 					
 					this.alienCanMove = true;
 					
+					removeStuck(i,j);
+					
 					if((checkPit(i-1,j) || checkVisit(i-1,j))){
 						this.moveInsteadRotate = true;
+						this.alienScannedFront = false;
+						
 						rotateAlien();
+											
 					}
+
 					else {
-						if(entities.get(i-1).get(j) instanceof Gold){
+						if(entities.get(i-1).get(j) instanceof Gold && this.alienScannedFront == true){
 							entities.get(i-1).remove(j);
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
@@ -434,35 +460,41 @@ public class World {
 							alienMoved = true;
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+							
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 						}
-						else if(entities.get(i-1).get(j) instanceof Pit || entities.get(i-1).get(j) instanceof Nano) {
-							this.alien.setIsAlive(false);
-							entities.get(i).remove(j);
-							entities.get(i).add(j,new Space());
-							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+						else if((entities.get(i-1).get(j) instanceof Pit || entities.get(i-1).get(j) instanceof Nano) && this.alienScannedFront == true){
+//							this.alien.setIsAlive(false);
+//							entities.get(i).remove(j);
+//							entities.get(i).add(j,new Space());
+//							this.alien.incrementMovement();
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
+							rotateAlien();
 						}
-						else {
+						else if(this.alienScannedFront == true){
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
 							entities.get(i).add(j, new Space());
 							entities.get(i-1).set(j, tempAlien);
 							alienMoved = true;
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 							visitedLocations.add(new VisitedLocation(i,j));
 							this.moveInsteadRotate = false;
-							System.out.println("EXECUTED");
+							this.alienScannedFront = false;
+							
+						}
+						else {
+							randomMove();
 						}
 					}
 					
@@ -491,51 +523,63 @@ public class World {
 					
 					this.alienCanMove = true;
 					
+					removeStuck(i,j);
+					
 					if((checkPit(i,j-1) || checkVisit(i,j-1))){
 						this.moveInsteadRotate = true;
 						rotateAlien();
+						this.alienScannedFront = false;
 						System.out.println("found");
+						
+					
+						
 					}
+
 					else {
-						if(entities.get(i).get(j-1) instanceof Gold){
+						if(entities.get(i).get(j-1) instanceof Gold && this.alienScannedFront == true){
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
 							entities.get(i).set(j-1,tempAlien);
-							
+						
 							entities.get(i).add(j,new Space());
 							alienMoved = true;
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 						}
-						else if(entities.get(i).get(j-1) instanceof Pit || entities.get(i).get(j-1) instanceof Nano ) {
-							this.alien.setIsAlive(false);
-							entities.get(i).remove(j);
-							entities.get(i).add(j,new Space());
-							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
-							
+						else if((entities.get(i).get(j-1) instanceof Pit || entities.get(i).get(j-1) instanceof Nano) && this.alienScannedFront == true) {
+//							this.alien.setIsAlive(false);
+//							entities.get(i).remove(j);
+//							entities.get(i).add(j,new Space());
+//							this.alien.incrementMovement();
+////							this.scanUp = false;
+////							this.scanDown = false;
+////							this.scanLeft = false;
+////							this.scanRight = false;
+//							
+							rotateAlien();
 						}
-						else {
+						else if(this.alienScannedFront == true) {
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
 							entities.get(i).add(j-1, tempAlien);
 							alienMoved = true;
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 							visitedLocations.add(new VisitedLocation(i,j));
 							this.moveInsteadRotate = false;
-							System.out.println("EXECUTED");
+							this.alienScannedFront = false;
+						
+						}else {
+							randomMove();
 						}
+						
 					}
 					
 				
@@ -565,48 +609,60 @@ public class World {
 					
 					this.alienCanMove = true;
 					
+					removeStuck(i,j);
+					
 					if((checkPit(i,j+1) || checkVisit(i, j+1))) {
 						this.moveInsteadRotate = true;
+						this.alienScannedFront = false;
 						rotateAlien();
-					}
+			
 					
+						
+					}
+
 					else {
-						if(entities.get(i).get(j+1) instanceof Gold){
+						if(entities.get(i).get(j+1) instanceof Gold && 	this.alienScannedFront == true){
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).set(j+1,tempAlien);
 							entities.get(i).set(j,new Space());
 							alienMoved = true;
 							alien.setHasGold(true);
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+							
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 						}
-						else if(entities.get(i).get(j+1) instanceof Pit || entities.get(i).get(j+1) instanceof Nano) {
-							this.alien.setIsAlive(false);
-							entities.get(i).remove(j);
-							entities.get(i).add(j,new Space());
-							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+						else if((entities.get(i).get(j+1) instanceof Pit || entities.get(i).get(j+1) instanceof Nano)  && this.alienScannedFront == true){
+//							this.alien.setIsAlive(false);
+//							entities.get(i).remove(j);
+//							entities.get(i).add(j,new Space());
+//							this.alien.incrementMovement();
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
+							
+							rotateAlien();
 							
 						}
-						else {
+						else if (this.alienScannedFront == true){
 							Alien tempAlien = (Alien) entities.get(i).get(j);
 							entities.get(i).remove(j);
 							entities.get(i).add(j+1,tempAlien);
 							alienMoved = true;
 							this.alien.incrementMovement();
-							this.scanUp = false;
-							this.scanDown = false;
-							this.scanLeft = false;
-							this.scanRight = false;
+//							this.scanUp = false;
+//							this.scanDown = false;
+//							this.scanLeft = false;
+//							this.scanRight = false;
 							visitedLocations.add(new VisitedLocation(i,j));
 							this.moveInsteadRotate = false;
-							System.out.println("EXECUTED");
+							this.alienScannedFront = false;
+							
+						} else {
+							randomMove();
 						}
 					}
 					
@@ -682,6 +738,7 @@ public class World {
 								this.alien.setScan(entities.get(i-1).get(j).getSymbol());
 								scanUp = true;
 								smartScan(i,j);
+								this.alienScannedFront = true;
 							}
 							else
 								this.alien.setScan("*");						
@@ -691,6 +748,7 @@ public class World {
 								scanRight = true;
 								this.alien.setScan(entities.get(i).get(j+1).getSymbol());
 								smartScan(i,j);
+								this.alienScannedFront = true;
 							}
 							else
 								this.alien.setScan("*");
@@ -700,6 +758,7 @@ public class World {
 								scanDown = true;
 								this.alien.setScan(entities.get(i+1).get(j).getSymbol());
 								smartScan(i,j);
+								this.alienScannedFront = true;
 							}
 							else
 								this.alien.setScan("*");
@@ -709,6 +768,7 @@ public class World {
 								scanLeft = true;
 								this.alien.setScan(entities.get(i).get(j-1).getSymbol());
 								smartScan(i,j);
+								this.alienScannedFront = true;
 							}
 							else 
 								this.alien.setScan("*");
@@ -719,7 +779,7 @@ public class World {
 		}
 		
 		
-				System.out.println(System.lineSeparator().repeat(150));
+				
 	}
 	
 	
@@ -883,6 +943,343 @@ public class World {
 		for(int n = 0 ;n<this.visitedLocations.size();n++){
 			System.out.println("Visited i : " + this.visitedLocations.get(n).getI() + " Visited j: " + this.visitedLocations.get(n).getJ());
 		}
+	}
+	
+	public void printPits() {
+		for(int n = 0 ;n<this.pitLocations.size();n++){
+			System.out.println("Visited i : " + this.pitLocations.get(n).getI() + " Visited j: " + this.pitLocations.get(n).getJ());
+		}
+	}
+	
+	public void removeStuck(int i, int j) {
+		int temp = this.visitedLocations.size();
+		boolean stuckUp = false;
+		boolean stuckDown = false;
+		boolean stuckRight = false;
+		boolean stuckLeft = false;
+		
+		if(alien.scan() == "breeze") {
+			
+		}
+		
+		for(int n = 0;n<temp;n++) {
+		
+			
+			if(i == 0 & j == 0) {
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+			}
+			else if (i == gridSize - 1 && j == 0) {
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckUp = true;
+				}	
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+			}
+			else if (i == 0 && j == gridSize - 1 ) {
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1) {
+					stuckLeft = true;
+				}	
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+			}
+			
+			else if (i == gridSize -1 && j == gridSize - 1 ) {
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1) {
+					stuckLeft = true;
+				}	
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckUp = true;
+				}	
+			}
+			
+			else if(i == 0) {
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1) {
+					stuckLeft = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+			}
+			
+			else if (i == gridSize - 1) {
+				if(this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckUp = true;
+				}		
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+					stuckLeft = true;
+				}
+				
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1) {
+					stuckRight = true;
+				}
+			}
+			else if(j == 0) {
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+						
+				if(this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckUp = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+			}
+			else if(j == gridSize -1) {
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1) {
+					stuckLeft = true;
+				}
+			}
+			else {
+				
+				if(this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j){
+					stuckUp = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i-1 && this.visitedLocations.get(n).getJ() == j) {
+					stuckDown = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1) {
+					stuckLeft = true;
+				}
+				if(this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+					stuckRight = true;
+				}
+			}
+		}
+		
+		int tempSize = this.visitedLocations.size();
+		
+		if(i == 0 && j == 0) {
+			if(stuckDown == true && stuckRight == true) {
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		
+		else if (i == gridSize - 1  && j == 0 ) {
+			if(stuckUp == true && stuckRight == true) {
+				
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+			}
+		}
+		
+		else if (i == 0 && j == gridSize - 1) {
+			if(stuckLeft == true && stuckDown == true) {
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+			}
+		}
+		
+		else if ( i == gridSize - 1 && j == gridSize - 1) {
+			if(stuckLeft == true && stuckUp == true) {
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+			}
+		}
+		
+		else if(i == 0) {
+			if(stuckDown == true && stuckLeft == true && stuckRight == true) {
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else if(i == gridSize - 1) {
+			if(stuckUp == true && stuckLeft == true && stuckRight == true) {
+				
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i - 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+			}
+		}
+		else if(j == 0) {
+			if(stuckDown == true && stuckUp == true && stuckRight == true) {
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+						
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i -1  && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j+1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+			}
+		}
+		else if (j == gridSize - 1) {
+			if(stuckDown == true && stuckUp == true && stuckLeft == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i -1  && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+			}
+		}
+		else {
+			if(stuckDown == true && stuckUp == true && stuckLeft == true && stuckRight == true) {
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i + 1 && this.visitedLocations.get(n).getJ() == j) {
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i -1  && this.visitedLocations.get(n).getJ() == j){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j-1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				for(int n = 0;n<tempSize;n++) {
+					if(n < this.visitedLocations.size() && this.visitedLocations.get(n).getI() == i && this.visitedLocations.get(n).getJ() == j + 1){
+						visitedLocations.remove(n);
+					}
+				}
+				
+				
+			}
+		}
+		
+	}
+	
+	public void randomMove() {
+		
+		if(this.rotateSuccessions == 3) {
+			scanFrontOfAlien();
+			this.rotateSuccessions = 0;
+		}
+		else {
+			int randomNum;
+			Random random = new Random();
+			
+			randomNum = random.nextInt(2);
+			
+			if (randomNum == 0) {
+				scanFrontOfAlien();
+			}
+			else if(randomNum == 1) {
+				rotateAlien();
+				this.rotateSuccessions++;
+			}
+		}
+		
 	}
 }
 

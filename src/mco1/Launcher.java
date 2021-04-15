@@ -153,25 +153,7 @@ public class Launcher  extends TimerTask{
 					world.moveAlien();
 				}
 				else {
-					   if((!world.isScanUp() || !world.isScanDown() || !world.isScanLeft() || !world.isScanRight()) && i == j) {
-					    	world.scanFrontOfAlien();
-					    	i++;
-					    }
-			
-					   else if(i!= j && j!=4){
-						   world.rotateAlien();
-						   j++;
-					   }
-					   
-					   else {
-						   world.smartMove();
-						   if(world.getMoveInsteadRotate() == false) {
-							   i = 0;
-							   j = 0;
-						   }
-						  
-					   }
-						   
+					world.smartMove();
 					   }
 				
 				world.drawBoard();
